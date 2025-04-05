@@ -16,7 +16,8 @@ You need to have `react`, `react-native` and `react-native-svg` as your app's de
 
 Then install this package with:
 
-`~$ npm install react-native-pie-chart --save`
+`~$ npm install github:onipetheoderic/react-native-pie-chart --save`
+`~$ yarn add onipetheoderic/react-native-pie-chart`
 
 If you're upgradeing from an old version, see the upgrade guide below.
 
