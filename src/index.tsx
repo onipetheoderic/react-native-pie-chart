@@ -2,7 +2,8 @@
 
 import { Fragment } from 'react'
 import { StyleProp, ViewStyle } from 'react-native'
-import { Svg, G, Path, Text, FontWeight, NumberProp, FontStyle } from 'react-native-svg'
+
+import { Svg, G, Path, Text, TSpan, FontWeight, NumberProp, FontStyle } from 'react-native-svg';
 import * as d3 from 'd3-shape'
 
 export type SliceLabel = {
@@ -10,6 +11,10 @@ export type SliceLabel = {
    * Text of the label
    */
   text: string
+   /**
+   * Description of the label
+   */
+  description?: string;
   /**
    * Color to fill the font with
    */
@@ -43,6 +48,13 @@ export type SliceLabel = {
    */
   offsetX?: number
   offsetY?: number
+
+  // Add these for description styling
+  descriptionFontSize?: NumberProp;
+  descriptionFontWeight?: FontWeight;
+  descriptionFontFamily?: string;
+  descriptionFontStyle?: FontStyle;
+  descriptionFill?: string;
 }
 
 /**
@@ -168,20 +180,44 @@ const PieChart = ({ widthAndHeight, series, cover, style = {}, padAngle }: Props
             <Fragment key={`f-${arc.index}`}>
               <Path key={`p-${arc.index}`} fill={sliceColor} d={arcGenerator()} />
               {sliceLabel && (
-                <Text
-                  key={`t-${arc.index}`}
-                  x={sliceCenterX + (sliceLabel.offsetX ?? 0)}
-                  y={sliceCenterY + (sliceLabel.offsetY ?? 0)}
-                  textAnchor='middle'
-                  fill={sliceLabel.fill}
-                  stroke={sliceLabel.stroke}
-                  fontSize={sliceLabel.fontSize}
-                  fontWeight={sliceLabel.fontWeight}
-                  fontFamily={sliceLabel.fontFamily}
-                  fontStyle={sliceLabel.fontStyle}
-                >
-                  {sliceLabel.text}
-                </Text>
+               <Text
+               key={`t-${arc.index}`}
+               x={sliceCenterX + (sliceLabel.offsetX ?? 0)}
+               y={sliceCenterY + (sliceLabel.offsetY ?? 0)}
+               textAnchor="middle"
+               fill={sliceLabel.fill}
+               stroke={sliceLabel.stroke}
+               fontSize={sliceLabel.fontSize}
+               fontWeight={sliceLabel.fontWeight}
+               fontFamily={sliceLabel.fontFamily}
+               fontStyle={sliceLabel.fontStyle}
+             >
+               {/* Split lines if needed */}
+               {sliceLabel.text?.split('\n').map((line, i) => (
+                 <TSpan
+                   key={`line-${arc.index}-${i}`}
+                   x={sliceCenterX + (sliceLabel.offsetX ?? 0)}
+                   dy={i === 0 ? 0 : (sliceLabel.fontSize || 10)}
+                 >
+                   {line}
+                 </TSpan>
+               ))}
+             
+               {sliceLabel.description && (
+                 <TSpan
+                   key={`desc-${arc.index}`}
+                   x={sliceCenterX + (sliceLabel.offsetX ?? 0)}
+                   dy={sliceLabel.descriptionFontSize || sliceLabel.fontSize || 10}
+                   fontSize={sliceLabel.descriptionFontSize}
+                   fontFamily={sliceLabel.descriptionFontFamily}
+                   fontWeight={sliceLabel.descriptionFontWeight}
+                   fontStyle={sliceLabel.descriptionFontStyle}
+                   fill={sliceLabel.descriptionFill}
+                 >
+                   {sliceLabel.description}
+                 </TSpan>
+               )}
+             </Text>
               )}
             </Fragment>
           )
